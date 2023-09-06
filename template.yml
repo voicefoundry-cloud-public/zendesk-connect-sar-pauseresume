@@ -9,8 +9,9 @@ Parameters:
     Default: prod
   SessionExpiry:
     Type: Number
-    Description: The max contact (call) session duration in seconds. Temporary credentials will expire after this time.
+    Description: The max contact (call) session duration in seconds. Temporary credentials will expire after this time. Max allowed is 3600 (1 hour).
     Default: 3600
+    MaxValue: 3600
 
 ######################### Metadata ############################
 Metadata:
@@ -23,7 +24,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ["Connect", "Zendesk", "Pause-Resume", "Recording"]
     HomePageUrl: https://github.com/voicefoundry-cloud-public/zendesk-connect-sar-pauseresume
-    SemanticVersion: 2.0.0
+    SemanticVersion: 2.1.0
     SourceCodeUrl: https://github.com/voicefoundry-cloud-public/zendesk-connect-sar-pauseresume
 
 Resources:
@@ -53,12 +54,13 @@ Resources:
           - Effect: "Allow"
             Principal:
               AWS:
-                - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+                - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root" # change this!!!
             Action:
               - "sts:AssumeRole"
       Path: "/"
       ManagedPolicyArns:
         - !Ref policyConnectFromZendesk
+      MaxSessionDuration: 3600
 
   policyLambdaAssumeRole:
     Type: AWS::IAM::ManagedPolicy
@@ -79,7 +81,7 @@ Resources:
     Properties:
       FunctionName: !Sub "zendeskContactInit-${TargetEnvironment}"
       Description: "Triggered from contact flow, it retrieves temporary credentials for Zendesk to access Connect API"
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Handler: index.handler
       CodeUri: contactInit/
       Timeout: 8

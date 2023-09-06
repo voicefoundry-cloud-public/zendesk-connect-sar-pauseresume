@@ -1,13 +1,13 @@
-const AWS = require("aws-sdk");
+import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
-exports.handler = async (event, context) => {
+export const handler = async (event, context) => {
     // console.log("Event From Amazon Connect: " + JSON.stringify(event, null, 2));
     if (!(event.Name && event.Name === 'ContactFlowEvent')) {
         console.error('Unexpected event:', JSON.stringify(event, null, 2));
         return { status_code: 400 };
     }
 
-    const sts = new AWS.STS();
+    const client = new STSClient({});
     const params = {
         DurationSeconds: Number(process.env.SESSION_EXPIRY) || 3600,
         ExternalId: "AWS_Connector_for_Zendesk",
@@ -15,8 +15,9 @@ exports.handler = async (event, context) => {
         RoleSessionName: event.Details.ContactData.ContactId
     };
     const unsuccessfulMessage = 'Failed to obtain temporary credentials from STS: ';
-    
-    const data = await sts.assumeRole(params).promise().catch((err) => {
+    const command = new AssumeRoleCommand(params);
+
+    const data = await client.send(command).catch((err) => {
         console.error(unsuccessfulMessage, err);
         return null;
     });
