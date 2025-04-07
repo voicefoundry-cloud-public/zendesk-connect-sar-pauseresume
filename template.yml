@@ -24,7 +24,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ["Connect", "Zendesk", "Pause-Resume", "Recording"]
     HomePageUrl: https://github.com/voicefoundry-cloud-public/zendesk-connect-sar-pauseresume
-    SemanticVersion: 2.1.0
+    SemanticVersion: 2.1.1
     SourceCodeUrl: https://github.com/voicefoundry-cloud-public/zendesk-connect-sar-pauseresume
 
 Resources:
@@ -81,7 +81,7 @@ Resources:
     Properties:
       FunctionName: !Sub "zendeskContactInit-${TargetEnvironment}"
       Description: "Triggered from contact flow, it retrieves temporary credentials for Zendesk to access Connect API"
-      Runtime: nodejs18.x
+      Runtime: nodejs22.x
       Handler: index.handler
       CodeUri: contactInit/
       Timeout: 8
